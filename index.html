@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>API TEST</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+
+<body>
+    <br>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <h3 class="text-center">GET TOKEN</h3>
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">TOKEN: </label>
+                    <div class="col-sm-10">
+                        <input type="text" id="returnedToken" class="form-control" readonly>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="button" id="getToken" class="btn btn-primary">GET TOKEN!</button>
+                </div>
+            </div>
+
+            <div class="col-sm border-left">
+                <h3 class="text-center">Test API</h3>
+
+                <form id="checkApi">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">TOKEN: </label>
+                        <div class="col-sm-10">
+                            <input type="text" id="api_token" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">URL: </label>
+                        <div class="col-sm-10">
+                            <input type="text" id="api_url" class="form-control" required>
+                            <small class="text-muted">Example:
+                                http://localhost:8080/Contact/1A392509-043D-4B7E-B27C-2750F19EEA99</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">TYPE: </label>
+                        <div class="col-sm-10">
+                            <select id="api_type" class="form-control">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">DATA: </label>
+                        <div class="col-sm-10">
+                            <input type="text" id="api_data" class="form-control">
+                            <small class="text-muted">Example: { "createdOn": "2019-02-02", "createdBy" : "Nguyen Duc
+                            Thang", "modifiedOn" : "2019-02-02", "modifiedBy": "Nguyen Duc Thang" }</small>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">CHECK API!</button>
+                    </div>
+                </form>
+
+                <div class="form-group">
+                    <label>Message:</label>
+                    <input type="text" id="returnedMessage" class="form-control" readonly></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Result:</label>
+                    <textarea id="result" class="form-control" rows="5" style="resize: none;" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $("#checkApi").submit(function (event) {
+                event.preventDefault();
+
+                const api_token = $('#api_token').val();
+                const api_url = $('#api_url').val();
+                const api_type = $('#api_type').val();
+                const api_data = $('#api_data').val();
+
+                alert('OK!');
+
+                $.ajax({
+                    url: api_url,
+                    type: api_type,
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": api_token
+                    },
+                    data: api_data,
+                    success: function (result) {
+                        $('#returnedMessage').val(JSON.stringify(result.message));
+                        $('#result').val(JSON.stringify(result.data));
+                    },
+                    error: function (error) {
+                        if(error.message != null) {
+                            $('#returnedMessage').val(error.message);
+                        }else {
+                            $('#returnedMessage').val('Đã có lỗi xảy ra, vui lòng thử lại sau!');
+                        }
+                        
+                    },
+                })
+            });
+
+            $('#getToken').click(function () {
+                getToken();
+            });
+
+            function getToken() {
+                $.ajax({
+                    url: 'http://localhost:8080/Auth?username=Admin&password=e10adc3949ba59abbe56e057f20f883e',
+                    contentType: "application/json",
+                    dataType: 'json',
+                    success: function (result) {
+                        $('#returnedToken').val(result.data.token);
+                        $('#api_token').val(result.data.token);
+                    }
+                })
+            }
+
+        });
+    </script>
+</body>
+
+</html>
